@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  username  String
+  phone     String
+  birthdate DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  userTrips UserTrip[]
+}
+
+model UserTrip {
+  id        String       @id @default(uuid())
+  userId    String
+  tripId    String
+  role      UserTripRole
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  deletedAt DateTime?
+
+  user       Users                    @relation(fields: [userId], references: [id])
+  trip       Trip                     @relation(fields: [tripId], references: [id])
+  checks     UserTripCheck[]
+  activities UserTripActivityMember[]
+}
+
+enum UserTripRole {
+  OWNER
+  MANAGER
+  SPECTATOR
+}
+
+model UserTripCheck {
+  id         String              @id @default(uuid())
+  userTripId String
+  status     UserTripCheckStatus
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  deletedAt  DateTime?
+
+  userTrip UserTrip @relation(fields: [userTripId], references: [id])
+}
+
+enum UserTripCheckStatus {
+  CONFIRMED
+  PENDING
+  DENIED
+}
+
+model Trip {
+  id        String    @id @default(uuid())
+  title     String
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  destinations Destination[]
+  userTrips    UserTrip[]
+}
+
+model Destination {
+  id        String    @id @default(uuid())
+  tripId    String
+  city      String
+  state     String
+  country   String
+  latitude  String
+  longitude String
+  placeId   String?
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  trip           Trip            @relation(fields: [tripId], references: [id])
+  activities     Activity[]
+  hotels         Hotel[]
+  restaurants    Restaurant[]
+  generalFlights GeneralFlight[]
+}
+
+model Activity {
+  id            String    @id @default(uuid())
+  destinationId String
+  addressId     String
+  title         String
+  description   String
+  date          DateTime
+  startHour     DateTime
+  endHour       DateTime
+  cost          Decimal
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  destination Destination              @relation(fields: [destinationId], references: [id])
+  address     Address                  @relation(fields: [addressId], references: [id])
+  members     UserTripActivityMember[]
+}
+
+model UserTripActivityMember {
+  id         String    @id @default(uuid())
+  activityId String
+  userTripId String
+  status     Boolean
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  activity Activity @relation(fields: [activityId], references: [id])
+  userTrip UserTrip @relation(fields: [userTripId], references: [id])
+}
+
+model Address {
+  id           String       @id @default(uuid())
+  city         String
+  state        String
+  country      String
+  number       String
+  neighborhood String
+  street       String
+  zipcode      Decimal
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+  Activity     Activity[]
+  Hotel        Hotel[]
+  Restaurant   Restaurant[]
+}
+
+model Hotel {
+  id            String  @id @default(uuid())
+  destinationId String
+  addressId     String
+  name          String
+  rating        Decimal
+
+  destination Destination @relation(fields: [destinationId], references: [id])
+  address     Address     @relation(fields: [addressId], references: [id])
+}
+
+model Restaurant {
+  id            String  @id @default(uuid())
+  destinationId String
+  addressId     String
+  name          String
+  priceLevel    Int
+  rating        Decimal
+
+  destination Destination @relation(fields: [destinationId], references: [id])
+  address     Address     @relation(fields: [addressId], references: [id])
+}
+
+model Flight {
+  id                 String    @id @default(uuid())
+  generalFlightId    String
+  order              Int
+  carrierCodeAirline String
+  airlineName        String
+  originAirport      String
+  destinationAirport String
+  departureDate      DateTime
+  departureTime      DateTime
+  arrivalDate        DateTime
+  arrivalTime        DateTime
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  generalFlight GeneralFlight @relation(fields: [generalFlightId], references: [id])
+}
+
+model GeneralFlight {
+  id            String    @id @default(uuid())
+  destinationId String
+  stopNumber    Int
+  nonStop       Boolean
+  duration      String
+  price         Decimal
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  destination Destination @relation(fields: [destinationId], references: [id])
+  Flight      Flight[]
+}
