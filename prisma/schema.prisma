@@ -13,33 +13,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
+model User {
   id        String    @id @default(uuid())
   email     String    @unique
   password  String
   username  String
   phone     String
   birthdate DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   userTrips UserTrip[]
+
+  @@map("users")
 }
 
 model UserTrip {
   id        String       @id @default(uuid())
-  userId    String
-  tripId    String
+  userId    String       @map("user_id")
+  tripId    String       @map("trip_id")
   role      UserTripRole
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+  deletedAt DateTime?    @map("deleted_at")
 
-  user       Users                    @relation(fields: [userId], references: [id])
+  user       User                     @relation(fields: [userId], references: [id])
   trip       Trip                     @relation(fields: [tripId], references: [id])
   checks     UserTripCheck[]
   activities UserTripActivityMember[]
+
+  @@map("user_trips")
 }
 
 enum UserTripRole {
@@ -50,13 +54,15 @@ enum UserTripRole {
 
 model UserTripCheck {
   id         String              @id @default(uuid())
-  userTripId String
+  userTripId String              @map("user_trip_id")
   status     UserTripCheckStatus
-  createdAt  DateTime            @default(now())
-  updatedAt  DateTime            @updatedAt
-  deletedAt  DateTime?
+  createdAt  DateTime            @default(now()) @map("created_at")
+  updatedAt  DateTime            @updatedAt @map("updated_at")
+  deletedAt  DateTime?           @map("deleted_at")
 
   userTrip UserTrip @relation(fields: [userTripId], references: [id])
+
+  @@map("user_trip_checks")
 }
 
 enum UserTripCheckStatus {
@@ -68,72 +74,80 @@ enum UserTripCheckStatus {
 model Trip {
   id        String    @id @default(uuid())
   title     String
-  startDate DateTime
-  endDate   DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  startDate DateTime  @map("start_date")
+  endDate   DateTime  @map("end_date")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   destinations Destination[]
   userTrips    UserTrip[]
+
+  @@map("trips")
 }
 
 model Destination {
   id        String    @id @default(uuid())
-  tripId    String
+  tripId    String    @map("trip_id")
   city      String
   state     String
   country   String
   latitude  String
   longitude String
-  placeId   String?
-  startDate DateTime
-  endDate   DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  placeId   String?   @map("place_id")
+  startDate DateTime  @map("start_date")
+  endDate   DateTime  @map("end_date")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   trip           Trip            @relation(fields: [tripId], references: [id])
   activities     Activity[]
   hotels         Hotel[]
   restaurants    Restaurant[]
   generalFlights GeneralFlight[]
+
+  @@map("destinations")
 }
 
 model Activity {
   id            String    @id @default(uuid())
-  destinationId String
-  addressId     String
+  destinationId String    @map("destination_id")
+  addressId     String    @map("address_id")
   title         String
-  description   String
+  description   String?
   date          DateTime
-  startHour     DateTime
-  endHour       DateTime
-  cost          Decimal
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+  startHour     DateTime? @map("start_hour")
+  endHour       DateTime? @map("end_hour")
+  cost          Decimal?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
 
   destination Destination              @relation(fields: [destinationId], references: [id])
   address     Address                  @relation(fields: [addressId], references: [id])
   members     UserTripActivityMember[]
+
+  @@map("activities")
 }
 
 model UserTripActivityMember {
   id         String    @id @default(uuid())
-  activityId String
-  userTripId String
+  activityId String    @map("activity_id")
+  userTripId String    @map("user_trip_id")
   status     Boolean
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  deletedAt  DateTime?
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
 
   activity Activity @relation(fields: [activityId], references: [id])
   userTrip UserTrip @relation(fields: [userTripId], references: [id])
+
+  @@map("user_trip_activity_members")
 }
 
 model Address {
-  id           String       @id @default(uuid())
+  id           String    @id @default(uuid())
   city         String
   state        String
   country      String
@@ -141,67 +155,78 @@ model Address {
   neighborhood String
   street       String
   zipcode      Decimal
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  deletedAt    DateTime?
-  Activity     Activity[]
-  Hotel        Hotel[]
-  Restaurant   Restaurant[]
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  Activity   Activity[]
+  Hotel      Hotel[]
+  Restaurant Restaurant[]
+
+  @@map("addresses")
 }
 
 model Hotel {
   id            String  @id @default(uuid())
-  destinationId String
-  addressId     String
+  destinationId String  @map("destination_id")
+  addressId     String  @map("address_id")
   name          String
   rating        Decimal
 
   destination Destination @relation(fields: [destinationId], references: [id])
   address     Address     @relation(fields: [addressId], references: [id])
+
+  @@map("hotels")
 }
 
 model Restaurant {
   id            String  @id @default(uuid())
-  destinationId String
-  addressId     String
+  destinationId String  @map("destination_id")
+  addressId     String  @map("address_id")
   name          String
-  priceLevel    Int
+  priceLevel    Int     @map("price_level")
   rating        Decimal
 
   destination Destination @relation(fields: [destinationId], references: [id])
   address     Address     @relation(fields: [addressId], references: [id])
+
+  @@map("restaurants")
 }
 
 model Flight {
   id                 String    @id @default(uuid())
-  generalFlightId    String
+  generalFlightId    String    @map("general_flight_id")
   order              Int
-  carrierCodeAirline String
-  airlineName        String
-  originAirport      String
-  destinationAirport String
-  departureDate      DateTime
-  departureTime      DateTime
-  arrivalDate        DateTime
-  arrivalTime        DateTime
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  deletedAt          DateTime?
+  carrierCodeAirline String    @map("carrier_code_airline")
+  airlineName        String    @map("airline_name")
+  originAirport      String    @map("origin_airport")
+  destinationAirport String    @map("destination_airport")
+  departureDate      DateTime  @map("departure_date")
+  departureTime      DateTime  @map("departure_time")
+  arrivalDate        DateTime  @map("arrival_date")
+  arrivalTime        DateTime  @map("arrival_time")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
 
   generalFlight GeneralFlight @relation(fields: [generalFlightId], references: [id])
+
+  @@map("flights")
 }
 
 model GeneralFlight {
   id            String    @id @default(uuid())
-  destinationId String
-  stopNumber    Int
-  nonStop       Boolean
+  destinationId String    @map("destination_id")
+  stopNumber    Int       @map("stop_number")
+  nonStop       Boolean   @map("non_stop")
   duration      String
   price         Decimal
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
 
   destination Destination @relation(fields: [destinationId], references: [id])
   Flight      Flight[]
+
+  @@map("general_flights")
 }
