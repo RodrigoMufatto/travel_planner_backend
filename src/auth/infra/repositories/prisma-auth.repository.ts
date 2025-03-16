@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { AuthRepository } from './auth.repository';
-import { SignUpDto } from '../dto/auth.dto';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { AuthRepository } from '../../domain/repositories/auth.repository';
+import { SignUpDto } from '../../dto/auth.dto';
 import { User } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
 
