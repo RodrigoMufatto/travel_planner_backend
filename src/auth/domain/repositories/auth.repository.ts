@@ -1,4 +1,4 @@
-import { SignUpDto } from '../dto/auth.dto';
+import { SignUpDto } from '../../dto/auth.dto';
 import { User } from '@prisma/client';
 
 export abstract class AuthRepository {
