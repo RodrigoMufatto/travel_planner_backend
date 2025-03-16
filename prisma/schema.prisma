@@ -39,7 +39,7 @@ model UserTrip {
   deletedAt DateTime?    @map("deleted_at")
 
   user       User                     @relation(fields: [userId], references: [id])
-  trip       Trip                     @relation(fields: [tripId], references: [id])
+  trip       Trip                     @relation(fields: [tripId], references: [id], onDelete: Cascade)
   checks     UserTripCheck[]
   activities UserTripActivityMember[]
 
@@ -89,19 +89,17 @@ model Trip {
 model Destination {
   id        String    @id @default(uuid())
   tripId    String    @map("trip_id")
-  city      String
-  state     String
-  country   String
-  latitude  String
-  longitude String
+  city      String?
+  state     String?
+  country   String?
+  latitude  String?
+  longitude String?
   placeId   String?   @map("place_id")
-  startDate DateTime  @map("start_date")
-  endDate   DateTime  @map("end_date")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  trip           Trip            @relation(fields: [tripId], references: [id])
+  trip           Trip            @relation(fields: [tripId], references: [id], onDelete: Cascade)
   activities     Activity[]
   hotels         Hotel[]
   restaurants    Restaurant[]
