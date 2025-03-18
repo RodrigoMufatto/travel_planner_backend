@@ -146,13 +146,13 @@ model UserTripActivityMember {
 
 model Address {
   id           String    @id @default(uuid())
-  city         String
-  state        String
-  country      String
-  number       String
-  neighborhood String
-  street       String
-  zipcode      Decimal
+  city         String?
+  state        String?
+  country      String?
+  number       String?
+  neighborhood String?
+  street       String?
+  zipcode      String?
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
