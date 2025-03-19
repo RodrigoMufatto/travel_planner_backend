@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class destination {
+class DestinationDto {
   @IsString()
   city: string;
 
@@ -29,13 +29,9 @@ class destination {
   placeId: string;
 }
 
-class userTrips {
+class UserTripsDto {
   @IsUUID()
   userId: string;
-
-  @IsOptional()
-  @IsString()
-  role?: string;
 }
 
 export class CreateTripDto {
@@ -49,16 +45,16 @@ export class CreateTripDto {
   endDate: string;
 
   @ValidateNested()
-  @Type(() => userTrips)
-  userTrips: userTrips;
+  @Type(() => UserTripsDto)
+  userTrips: UserTripsDto;
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => destination)
-  destination: destination[];
+  @Type(() => DestinationDto)
+  destination: DestinationDto[];
 }
 
-export class listTripsByUserIdDto {
+export class ListTripsByUserIdDto {
   @IsOptional()
   @IsString()
   title?: string;
