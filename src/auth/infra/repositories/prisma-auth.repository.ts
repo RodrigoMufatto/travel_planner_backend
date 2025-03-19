@@ -4,6 +4,7 @@ import { AuthRepository } from '../../domain/repositories/auth.repository';
 import { SignUpDto } from '../../dto/auth.dto';
 import { User } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
+import { SignUpRepositoryInputInterface } from 'src/auth/domain/repositories/auth.repository.interface';
 
 @Injectable()
 export class PrismaAuthRepository implements AuthRepository {
@@ -15,7 +16,10 @@ export class PrismaAuthRepository implements AuthRepository {
     });
   }
 
-  async createUser(data: SignUpDto, hashedPassword: string): Promise<User> {
+  async createUser(
+    data: SignUpRepositoryInputInterface,
+    hashedPassword: string,
+  ): Promise<User> {
     return this.prisma.user.create({
       data: {
         id: uuid(),
@@ -23,7 +27,7 @@ export class PrismaAuthRepository implements AuthRepository {
         email: data.email,
         password: hashedPassword,
         phone: data.phone,
-        birthdate: new Date(data.birthdate),
+        birthdate: data.birthdate,
       },
     });
   }
