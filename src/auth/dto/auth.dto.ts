@@ -1,5 +1,9 @@
-import { Transform } from 'class-transformer';
-import { IsDate, IsEmail, IsNotEmpty, IsPhoneNumber } from 'class-validator';
+import {
+  IsDateString,
+  IsEmail,
+  IsNotEmpty,
+  IsPhoneNumber,
+} from 'class-validator';
 
 export class SignUpDto {
   @IsEmail()
@@ -11,9 +15,8 @@ export class SignUpDto {
   @IsNotEmpty()
   username: string;
 
-  @Transform(({ value }) => new Date(value))
-  @IsDate()
-  birthdate: Date;
+  @IsDateString()
+  birthdate: string;
 
   @IsPhoneNumber('BR')
   phone: string;
