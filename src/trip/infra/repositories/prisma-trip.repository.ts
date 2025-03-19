@@ -1,22 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { Trip, UserTripRole } from '@prisma/client';
-import { contains } from 'class-validator';
+import { UserTripRole } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { TripWithDestinations } from 'src/trip/domain/models/trip.model';
 import { TripRepository } from 'src/trip/domain/repositories/trip.repository';
-import { CreateTripDto } from 'src/trip/dto/trip.dto';
+import {
+  CreateTripRepositoryInputInterface,
+  CreateTripRepositoryOutputInterface,
+  ListTripsByUserIdRepositoryInputInterface,
+  ListTripsByUserIdRepositoryOutputInterface,
+} from 'src/trip/domain/repositories/trip.repository.interface';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class PrismaTripRepository implements TripRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createTrip(data: CreateTripDto): Promise<Trip> {
+  async createTrip(
+    data: CreateTripRepositoryInputInterface,
+  ): Promise<CreateTripRepositoryOutputInterface> {
     return this.prisma.trip.create({
       data: {
         id: uuid(),
         title: data.title,
-        startDate: new Date(data.startDate),
+        startDate: data.startDate,
         endDate: data.endDate,
         userTrips: {
           create: {
@@ -33,45 +38,41 @@ export class PrismaTripRepository implements TripRepository {
   }
 
   async findTripsByUserId(
-    userId: string,
-    skip: number,
-    limit: number,
-    titleFilter?: string,
-    startDateFilter?: Date,
-    endDateFilter?: Date,
-  ): Promise<TripWithDestinations[] | null> {
+    data: ListTripsByUserIdRepositoryInputInterface,
+  ): Promise<ListTripsByUserIdRepositoryOutputInterface[] | null> {
     return this.prisma.trip.findMany({
       where: {
         userTrips: {
           some: {
-            userId: userId,
+            userId: data.userId,
           },
         },
-        title: titleFilter
+        title: data.title
           ? {
-              contains: titleFilter,
+              contains: data.title,
               mode: 'insensitive',
             }
           : undefined,
         startDate:
-          startDateFilter && endDateFilter
+          data.startDate && data.endDate
             ? {
-                gte: startDateFilter,
-                lte: endDateFilter,
+                gte: data.startDate,
+                lte: data.endDate,
               }
             : undefined,
       },
       include: {
         destinations: {
           select: {
+            id: true,
             city: true,
             state: true,
             country: true,
           },
         },
       },
-      skip: skip,
-      take: limit,
+      skip: data.skip,
+      take: data.limit,
       orderBy: {
         createdAt: 'asc',
       },
