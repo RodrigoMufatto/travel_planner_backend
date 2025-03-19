@@ -1,16 +1,19 @@
 import { Trip } from '@prisma/client';
-import { CreateTripDto } from 'src/trip/dto/trip.dto';
-import { TripWithDestinations } from '../models/trip.model';
+import {
+  CreateTripRepositoryInputInterface,
+  CreateTripRepositoryOutputInterface,
+  ListTripsByUserIdRepositoryInputInterface,
+  ListTripsByUserIdRepositoryOutputInterface,
+} from './trip.repository.interface';
 
 export abstract class TripRepository {
-  abstract createTrip(data: CreateTripDto): Promise<Trip>;
+  abstract createTrip(
+    data: CreateTripRepositoryInputInterface,
+  ): Promise<CreateTripRepositoryOutputInterface>;
+
   abstract findTripsByUserId(
-    userId: string,
-    skip: number,
-    limit: number,
-    titleFilter?: string,
-    startDateFilter?: Date,
-    endDateFilter?: Date,
-  ): Promise<TripWithDestinations[] | null>;
+    data: ListTripsByUserIdRepositoryInputInterface,
+  ): Promise<ListTripsByUserIdRepositoryOutputInterface[] | null>;
+
   abstract deleteTripByTripId(tripId: string);
 }
