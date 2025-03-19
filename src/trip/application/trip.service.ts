@@ -1,37 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTripDto, listTripsByUserIdDto } from './dto/trip.dto';
-import { TripRepository } from './domain/repositories/trip.repository';
+import { TripRepository } from '../domain/repositories/trip.repository';
+import {
+  CreateTripServiceInputInterface,
+  CreateTripServiceOutputInterface,
+  ListTripsByUserIdServiceInputInterface,
+  ListTripsByUserIdServiceOutputInterface,
+} from './trip.service.interface';
 
 @Injectable()
 export class TripService {
   constructor(private readonly tripRepository: TripRepository) {}
 
-  async createTripService(data: CreateTripDto) {
-    const trip = await this.tripRepository.createTrip(data);
+  async createTripService(
+    data: CreateTripServiceInputInterface,
+  ): Promise<CreateTripServiceOutputInterface> {
+    const trip = await this.tripRepository.createTrip({
+      ...data,
+      startDate: new Date(data.startDate),
+      endDate: new Date(data.endDate),
+    });
 
     return trip;
   }
 
   async listTripsByUserIdService(
-    userId: string,
-    listTripsByUserId: listTripsByUserIdDto,
-  ) {
+    listTripsByUserId: ListTripsByUserIdServiceInputInterface,
+  ): Promise<ListTripsByUserIdServiceOutputInterface[]> {
     const page = listTripsByUserId.page ? Number(listTripsByUserId.page) : 1;
     const limit = listTripsByUserId.limit ? Number(listTripsByUserId.limit) : 9;
     const skip = (page - 1) * limit;
 
-    const trips = await this.tripRepository.findTripsByUserId(
-      userId,
-      skip,
-      limit,
-      listTripsByUserId.title,
-      listTripsByUserId.startDate
+    const trips = await this.tripRepository.findTripsByUserId({
+      userId: listTripsByUserId.userId,
+      title: listTripsByUserId.title,
+      startDate: listTripsByUserId.startDate
         ? new Date(listTripsByUserId.startDate)
         : undefined,
-      listTripsByUserId.endDate
+      endDate: listTripsByUserId.endDate
         ? new Date(listTripsByUserId.endDate)
         : undefined,
-    );
+      skip,
+      limit,
+    });
 
     if (!trips || trips.length === 0) {
       throw new Error('No trips found for this user');
@@ -43,6 +53,7 @@ export class TripService {
       startDate: trip.startDate,
       endDate: trip.endDate,
       destinations: trip.destinations.map((dest) => ({
+        id: dest.id,
         city: dest.city,
         state: dest.state,
         country: dest.country,
