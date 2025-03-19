@@ -1,8 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { SignInDto, SignUpDto } from './dto/auth.dto';
+import { SignInDto, SignUpDto } from '../dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { AuthRepository } from './domain/repositories/auth.repository';
+import { AuthRepository } from '../domain/repositories/auth.repository';
+import {
+  SignInServiceInputInterface,
+  SignInServiceOutputInterface,
+  SignUpServiceInputInterface,
+  SignUpServiceOutputInterface,
+} from './auth.service.interface';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +17,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signup(data: SignUpDto) {
+  async signUp(
+    data: SignUpServiceInputInterface,
+  ): Promise<SignUpServiceOutputInterface> {
     const userAlreadyExists = await this.authRepository.findByEmail(data.email);
 
     if (userAlreadyExists) {
@@ -19,12 +27,20 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    const user = await this.authRepository.createUser(data, hashedPassword);
 
-    return user;
+    const user = await this.authRepository.createUser(
+      { ...data, birthdate: new Date(data.birthdate) },
+      hashedPassword,
+    );
+
+    return {
+      id: user.id,
+    };
   }
 
-  async signin(data: SignInDto) {
+  async signIn(
+    data: SignInServiceInputInterface,
+  ): Promise<SignInServiceOutputInterface> {
     const user = await this.authRepository.findByEmail(data.email);
 
     if (!user) {
@@ -32,7 +48,7 @@ export class AuthService {
     }
 
     const passwordMatch = await bcrypt.compare(data.password, user.password);
-    
+
     if (!passwordMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
