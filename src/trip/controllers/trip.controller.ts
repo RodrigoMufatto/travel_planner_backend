@@ -8,9 +8,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CreateTripDto, listTripsByUserIdDto } from './dto/trip.dto';
-import { TripService } from './trip.service';
-import { AuthGuard } from '../auth/auth.guards';
+import { CreateTripDto, ListTripsByUserIdDto } from '../dto/trip.dto';
+import { TripService } from '../application/trip.service';
+import { AuthGuard } from 'src/auth/auth.guards';
+import {
+  CreateTripPresenter,
+  ListTripsByUserIdPresenter,
+} from '../presenters/trip.presenter';
 
 @Controller('trip')
 export class TripController {
@@ -19,16 +23,23 @@ export class TripController {
   @UseGuards(AuthGuard)
   @Post('create')
   async createTrip(@Body() body: CreateTripDto) {
-    return await this.tripService.createTripService(body);
+    const trip = await this.tripService.createTripService(body);
+
+    return new CreateTripPresenter(trip);
   }
 
   @UseGuards(AuthGuard)
   @Get('list/:userId')
   async listTripsByUserId(
     @Param('userId') userId: string,
-    @Query() query: listTripsByUserIdDto,
+    @Query() query: ListTripsByUserIdDto,
   ) {
-    return await this.tripService.listTripsByUserIdService(userId, query);
+    const list = await this.tripService.listTripsByUserIdService({
+      userId,
+      ...query,
+    });
+
+    return list.map((trip) => new ListTripsByUserIdPresenter(trip));
   }
 
   @UseGuards(AuthGuard)
