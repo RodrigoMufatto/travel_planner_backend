@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Activity, Prisma } from '@prisma/client';
 import { ActivityRepository } from 'src/activity/domain/repositories/activity.repository';
-import { CreateActivityRepositoryInputInterface } from 'src/activity/domain/repositories/activity.repository.interface';
+import {
+  CreateActivityRepositoryInputInterface,
+  ListByDestinationIdRepositoryInputInterface,
+  ListByDestinationIdRepositoryOutputInterface,
+} from 'src/activity/domain/repositories/activity.repository.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuid } from 'uuid';
 
@@ -39,5 +43,58 @@ export class PrismaActivityRepository implements ActivityRepository {
         },
       },
     });
+  }
+
+  async listByDestinationId(
+    data: ListByDestinationIdRepositoryInputInterface,
+  ): Promise<{
+    activity: ListByDestinationIdRepositoryOutputInterface[];
+    pagination: { page: number; limit: number; total: number };
+  }> {
+    const total = await this.prisma.activity.count({
+      where: {
+        destinationId: data.destinationId,
+      },
+    });
+
+    const list = await this.prisma.activity.findMany({
+      where: {
+        destinationId: data.destinationId,
+      },
+      select: {
+        id: true,
+        title: true,
+        addressId: true,
+        description: true,
+        startDate: true,
+        endDate: true,
+        cost: true,
+        address: {
+          select: {
+            city: true,
+            state: true,
+            country: true,
+            neighborhood: true,
+            number: true,
+            zipcode: true,
+            street: true,
+          },
+        },
+      },
+      skip: data.skip,
+      take: data.limit,
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    return {
+      activity: list,
+      pagination: {
+        page: Math.floor(data.skip / data.limit) + 1,
+        limit: data.limit,
+        total: total,
+      },
+    };
   }
 }
