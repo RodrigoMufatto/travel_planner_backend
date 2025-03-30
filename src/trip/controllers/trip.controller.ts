@@ -39,7 +39,7 @@ export class TripController {
       ...query,
     });
 
-    return list.map((trip) => new ListTripsByUserIdPresenter(trip));
+    return new ListTripsByUserIdPresenter(list);
   }
 
   @UseGuards(AuthGuard)
