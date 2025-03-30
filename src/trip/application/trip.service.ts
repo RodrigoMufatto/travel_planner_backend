@@ -25,7 +25,7 @@ export class TripService {
 
   async listTripsByUserIdService(
     listTripsByUserId: ListTripsByUserIdServiceInputInterface,
-  ): Promise<ListTripsByUserIdServiceOutputInterface[]> {
+  ): Promise<ListTripsByUserIdServiceOutputInterface> {
     const page = listTripsByUserId.page ? Number(listTripsByUserId.page) : 1;
     const limit = listTripsByUserId.limit ? Number(listTripsByUserId.limit) : 9;
     const skip = (page - 1) * limit;
@@ -43,22 +43,21 @@ export class TripService {
       limit,
     });
 
-    if (!trips || trips.length === 0) {
-      throw new Error('No trips found for this user');
-    }
-
-    return trips.map((trip) => ({
-      id: trip.id,
-      title: trip.title,
-      startDate: trip.startDate,
-      endDate: trip.endDate,
-      destinations: trip.destinations.map((dest) => ({
-        id: dest.id,
-        city: dest.city,
-        state: dest.state,
-        country: dest.country,
+    return {
+      trips: trips.trip.map((trip) => ({
+        id: trip.id,
+        title: trip.title,
+        startDate: trip.startDate,
+        endDate: trip.endDate,
+        destinations: trip.destinations.map((dest) => ({
+          id: dest.id,
+          city: dest.city,
+          state: dest.state,
+          country: dest.country,
+        })),
       })),
-    }));
+      pagination: trips.pagination,
+    };
   }
 
   async deleteTrip(tripId: string) {

@@ -8,16 +8,24 @@ export interface ListTripsByUserIdServiceInputInterface {
 }
 
 export interface ListTripsByUserIdServiceOutputInterface {
-  id: string;
-  title: string;
-  startDate: Date;
-  endDate: Date;
-  destinations: {
+  trips: {
     id: string;
-    city: string;
-    state: string;
-    country: string;
+    title: string;
+    startDate: Date;
+    endDate: Date;
+    destinations: {
+      id: string;
+      city: string;
+      state: string;
+      country: string;
+    }[];
   }[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 export interface UserTripsInterface {
