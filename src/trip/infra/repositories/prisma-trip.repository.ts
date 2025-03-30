@@ -39,8 +39,26 @@ export class PrismaTripRepository implements TripRepository {
 
   async findTripsByUserId(
     data: ListTripsByUserIdRepositoryInputInterface,
-  ): Promise<ListTripsByUserIdRepositoryOutputInterface[] | null> {
-    return this.prisma.trip.findMany({
+  ): Promise<{
+    trip: ListTripsByUserIdRepositoryOutputInterface[] | null;
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }> {
+    const total = await this.prisma.trip.count({
+      where: {
+        userTrips: {
+          some: {
+            userId: data.userId,
+          },
+        },
+      },
+    });
+
+    const list = await this.prisma.trip.findMany({
       where: {
         userTrips: {
           some: {
@@ -77,6 +95,18 @@ export class PrismaTripRepository implements TripRepository {
         createdAt: 'asc',
       },
     });
+
+    const totalPages = Math.ceil(total / data.limit);
+
+    return {
+      trip: list,
+      pagination: {
+        page: Math.floor(data.skip / data.limit) + 1,
+        limit: data.limit,
+        total: total,
+        totalPages: totalPages,
+      },
+    };
   }
 
   async deleteTripByTripId(tripId: string) {
