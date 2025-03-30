@@ -13,7 +13,15 @@ export abstract class TripRepository {
 
   abstract findTripsByUserId(
     data: ListTripsByUserIdRepositoryInputInterface,
-  ): Promise<ListTripsByUserIdRepositoryOutputInterface[] | null>;
+  ): Promise<{
+    trip: ListTripsByUserIdRepositoryOutputInterface[] | null;
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }>;
 
   abstract deleteTripByTripId(tripId: string);
 }
