@@ -10,6 +10,12 @@ import {
 } from 'class-validator';
 
 class DestinationDto {
+  @IsDateString()
+  startDate: string;
+
+  @IsDateString()
+  endDate: string;
+
   @IsString()
   city: string;
 
@@ -37,12 +43,6 @@ class UserTripsDto {
 export class CreateTripDto {
   @IsString()
   title: string;
-
-  @IsDateString()
-  startDate: string;
-
-  @IsDateString()
-  endDate: string;
 
   @ValidateNested()
   @Type(() => UserTripsDto)
