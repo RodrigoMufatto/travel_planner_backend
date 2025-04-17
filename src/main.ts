@@ -8,6 +8,13 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  app.enableCors({
+    origin: "http://localhost:4000",
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
+    allowedHeaders: "Content-Type, Authorization",
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Travel Planner')
     .setDescription('The Developer Travel Planner API description')
