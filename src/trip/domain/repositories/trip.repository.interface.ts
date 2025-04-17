@@ -15,6 +15,8 @@ export type ListTripsByUserIdRepositoryOutputInterface = Trip & {
     city: string;
     state: string;
     country: string;
+    startDate: Date;
+    endDate: Date;
   }[];
 };
 
@@ -23,6 +25,8 @@ export interface UserTripsInterface {
 }
 
 interface DestinationInterface {
+  startDate: Date;
+  endDate: Date;
   city: string;
   state: string;
   country: string;
@@ -33,8 +37,6 @@ interface DestinationInterface {
 
 export interface CreateTripRepositoryInputInterface {
   title: string;
-  startDate: Date;
-  endDate: Date;
   userTrips: UserTripsInterface;
   destination: DestinationInterface[];
 }
@@ -42,6 +44,15 @@ export interface CreateTripRepositoryInputInterface {
 export interface CreateTripRepositoryOutputInterface {
   id: string;
   title: string;
-  startDate: Date;
-  endDate: Date;
 };
+
+export interface GetTripByUserIdRepositoryOutputInterface {
+  title: string;
+  id: string;
+  destinations: {
+      startDate: Date;
+      endDate: Date;
+      city: string;
+      country: string;
+  }[];
+}
