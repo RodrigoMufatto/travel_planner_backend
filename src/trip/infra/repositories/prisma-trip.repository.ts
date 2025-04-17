@@ -5,6 +5,7 @@ import { TripRepository } from 'src/trip/domain/repositories/trip.repository';
 import {
   CreateTripRepositoryInputInterface,
   CreateTripRepositoryOutputInterface,
+  GetTripByUserIdRepositoryOutputInterface,
   ListTripsByUserIdRepositoryInputInterface,
   ListTripsByUserIdRepositoryOutputInterface,
 } from 'src/trip/domain/repositories/trip.repository.interface';
@@ -21,8 +22,6 @@ export class PrismaTripRepository implements TripRepository {
       data: {
         id: uuid(),
         title: data.title,
-        startDate: data.startDate,
-        endDate: data.endDate,
         userTrips: {
           create: {
             id: uuid(),
@@ -71,13 +70,17 @@ export class PrismaTripRepository implements TripRepository {
               mode: 'insensitive',
             }
           : undefined,
-        startDate:
-          data.startDate && data.endDate
-            ? {
-                gte: data.startDate,
-                lte: data.endDate,
-              }
-            : undefined,
+        destinations: {
+          some: {
+            startDate:
+              data.startDate && data.endDate
+                ? {
+                    gte: data.startDate,
+                    lte: data.endDate,
+                  }
+                : undefined,
+          },
+        },
       },
       include: {
         destinations: {
@@ -86,6 +89,8 @@ export class PrismaTripRepository implements TripRepository {
             city: true,
             state: true,
             country: true,
+            startDate: true,
+            endDate: true,
           },
         },
       },
@@ -115,5 +120,29 @@ export class PrismaTripRepository implements TripRepository {
         id: tripId,
       },
     });
+  }
+
+  async getTripById(
+    tripId: string,
+  ): Promise<GetTripByUserIdRepositoryOutputInterface> {
+    const trip = await this.prisma.trip.findFirst({
+      where: {
+        id: tripId,
+      },
+      select: {
+        id: true,
+        title: true,
+        destinations: {
+          select: {
+            city: true,
+            country: true,
+            startDate: true,
+            endDate: true,
+          },
+        },
+      },
+    });
+
+    return trip;
   }
 }
