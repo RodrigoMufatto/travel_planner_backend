@@ -13,6 +13,7 @@ import { TripService } from '../application/trip.service';
 import { AuthGuard } from 'src/auth/auth.guards';
 import {
   CreateTripPresenter,
+  GetTripByUserIdPresenter,
   ListTripsByUserIdPresenter,
 } from '../presenters/trip.presenter';
 
@@ -48,5 +49,13 @@ export class TripController {
     await this.tripService.deleteTrip(tripId);
 
     return { statusCode: 204 };
+  }
+
+  @UseGuards(AuthGuard)
+  @Get(':tripId')
+  async getTripById(@Param('tripId') tripId: string) {
+    const trip = await this.tripService.getTripByIdService(tripId);
+
+    return new GetTripByUserIdPresenter(trip);
   }
 }

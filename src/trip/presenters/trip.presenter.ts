@@ -1,5 +1,6 @@
 import {
   CreateTripServiceOutputInterface,
+  GetTripByUserIdServiceOutputInterface,
   ListTripsByUserIdServiceOutputInterface,
 } from '../application/trip.service.interface';
 
@@ -7,13 +8,13 @@ export class ListTripsByUserIdPresenter {
   trips: {
     id: string;
     title: string;
-    startDate: Date;
-    endDate: Date;
     destinations: {
       id: string;
       city: string;
       state: string;
       country: string;
+      startDate: Date;
+      endDate: Date;
     }[];
   }[];
   pagination: {
@@ -26,13 +27,13 @@ export class ListTripsByUserIdPresenter {
     this.trips = serviceResponse.trips.map((trip) => ({
       id: trip.id,
       title: trip.title,
-      startDate: trip.startDate,
-      endDate: trip.endDate,
       destinations: trip.destinations.map((dest) => ({
         id: dest.id,
         city: dest.city,
         state: dest.state,
         country: dest.country,
+        startDate: dest.startDate,
+        endDate: dest.endDate,
       })),
     }));
 
@@ -43,13 +44,31 @@ export class ListTripsByUserIdPresenter {
 export class CreateTripPresenter {
   id: string;
   title: string;
-  startDate: Date;
-  endDate: Date;
 
   constructor(trip: CreateTripServiceOutputInterface) {
     this.id = trip.id;
     this.title = trip.title;
-    this.startDate = trip.startDate;
-    this.endDate = trip.endDate;
+  }
+}
+
+export class GetTripByUserIdPresenter {
+  title: string;
+  id: string;
+  destinations: {
+    startDate: Date;
+    endDate: Date;
+    city: string;
+    country: string;
+  }[];
+
+  constructor(trip: GetTripByUserIdServiceOutputInterface) {
+    this.id = trip.id;
+    this.title = trip.title;
+    this.destinations = trip.destinations.map((dest) => ({
+      city: dest.city,
+      country: dest.country,
+      endDate: dest.endDate,
+      startDate: dest.startDate,
+    }));
   }
 }
