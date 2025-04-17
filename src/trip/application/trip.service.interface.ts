@@ -11,13 +11,13 @@ export interface ListTripsByUserIdServiceOutputInterface {
   trips: {
     id: string;
     title: string;
-    startDate: Date;
-    endDate: Date;
     destinations: {
       id: string;
       city: string;
       state: string;
       country: string;
+      startDate: Date;
+      endDate: Date;
     }[];
   }[];
   pagination: {
@@ -33,6 +33,8 @@ export interface UserTripsInterface {
 }
 
 interface DestinationInterface {
+  startDate: string;
+  endDate: string;
   city: string;
   state: string;
   country: string;
@@ -43,8 +45,6 @@ interface DestinationInterface {
 
 export interface CreateTripServiceInputInterface {
   title: string;
-  startDate: string;
-  endDate: string;
   userTrips: UserTripsInterface;
   destination: DestinationInterface[];
 }
@@ -52,6 +52,15 @@ export interface CreateTripServiceInputInterface {
 export interface CreateTripServiceOutputInterface {
   id: string;
   title: string;
-  startDate: Date;
-  endDate: Date;
+}
+
+export interface GetTripByUserIdServiceOutputInterface {
+  title: string;
+  id: string;
+  destinations: {
+      startDate: Date;
+      endDate: Date;
+      city: string;
+      country: string;
+  }[];
 }

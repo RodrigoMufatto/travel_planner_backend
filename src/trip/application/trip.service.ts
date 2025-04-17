@@ -3,6 +3,7 @@ import { TripRepository } from '../domain/repositories/trip.repository';
 import {
   CreateTripServiceInputInterface,
   CreateTripServiceOutputInterface,
+  GetTripByUserIdServiceOutputInterface,
   ListTripsByUserIdServiceInputInterface,
   ListTripsByUserIdServiceOutputInterface,
 } from './trip.service.interface';
@@ -14,10 +15,15 @@ export class TripService {
   async createTripService(
     data: CreateTripServiceInputInterface,
   ): Promise<CreateTripServiceOutputInterface> {
+    const formattedDestinations = data.destination.map((dest) => ({
+      ...dest,
+      startDate: new Date(dest.startDate),
+      endDate: new Date(dest.endDate),
+    }));
+
     const trip = await this.tripRepository.createTrip({
       ...data,
-      startDate: new Date(data.startDate),
-      endDate: new Date(data.endDate),
+      destination: formattedDestinations,
     });
 
     return trip;
@@ -47,13 +53,13 @@ export class TripService {
       trips: trips.trip.map((trip) => ({
         id: trip.id,
         title: trip.title,
-        startDate: trip.startDate,
-        endDate: trip.endDate,
         destinations: trip.destinations.map((dest) => ({
           id: dest.id,
           city: dest.city,
           state: dest.state,
           country: dest.country,
+          startDate: dest.startDate,
+          endDate: dest.endDate,
         })),
       })),
       pagination: trips.pagination,
@@ -62,5 +68,13 @@ export class TripService {
 
   async deleteTrip(tripId: string) {
     await this.tripRepository.deleteTripByTripId(tripId);
+  }
+
+  async getTripByIdService(
+    tripId: string,
+  ): Promise<GetTripByUserIdServiceOutputInterface> {
+    const trip = await this.tripRepository.getTripById(tripId);
+
+    return trip;
   }
 }
