@@ -58,9 +58,12 @@ export interface GetTripByUserIdServiceOutputInterface {
   title: string;
   id: string;
   destinations: {
-      startDate: Date;
-      endDate: Date;
-      city: string;
-      country: string;
+    id: string;
+    startDate: Date;
+    endDate: Date;
+    city: string;
+    country: string;
+    latitude: string;
+    longitude: string;
   }[];
 }
