@@ -23,7 +23,10 @@ export class PrismaActivityRepository implements ActivityRepository {
         startDate: data.startDate,
         endDate: data.endDate,
         description: data.description,
-        cost: new Prisma.Decimal(data.cost),
+        ...(data.cost !== undefined &&
+          data.cost !== null && {
+            cost: new Prisma.Decimal(data.cost),
+          }),
         destination: {
           connect: {
             id: data.destinationId,
@@ -49,7 +52,12 @@ export class PrismaActivityRepository implements ActivityRepository {
     data: ListByDestinationIdRepositoryInputInterface,
   ): Promise<{
     activity: ListByDestinationIdRepositoryOutputInterface[];
-    pagination: { page: number; limit: number; total: number };
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
   }> {
     const total = await this.prisma.activity.count({
       where: {
@@ -88,12 +96,15 @@ export class PrismaActivityRepository implements ActivityRepository {
       },
     });
 
+    const totalPages = Math.ceil(total / data.limit);
+
     return {
       activity: list,
       pagination: {
         page: Math.floor(data.skip / data.limit) + 1,
         limit: data.limit,
         total: total,
+        totalPages: totalPages,
       },
     };
   }
