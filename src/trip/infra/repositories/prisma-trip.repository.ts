@@ -134,10 +134,13 @@ export class PrismaTripRepository implements TripRepository {
         title: true,
         destinations: {
           select: {
+            id: true,
             city: true,
             country: true,
             startDate: true,
             endDate: true,
+            latitude: true,
+            longitude: true,
           },
         },
       },
