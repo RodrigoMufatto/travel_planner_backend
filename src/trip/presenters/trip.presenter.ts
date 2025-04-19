@@ -55,20 +55,26 @@ export class GetTripByUserIdPresenter {
   title: string;
   id: string;
   destinations: {
+    id: string;
     startDate: Date;
     endDate: Date;
     city: string;
     country: string;
+    latitude: string;
+    longitude: string;
   }[];
 
   constructor(trip: GetTripByUserIdServiceOutputInterface) {
     this.id = trip.id;
     this.title = trip.title;
     this.destinations = trip.destinations.map((dest) => ({
+      id: dest.id,
       city: dest.city,
       country: dest.country,
       endDate: dest.endDate,
       startDate: dest.startDate,
+      latitude: dest.latitude,
+      longitude: dest.longitude,
     }));
   }
 }
