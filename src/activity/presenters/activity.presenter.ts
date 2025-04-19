@@ -30,6 +30,7 @@ export class ListByDestinationIdPresenter {
     page: number;
     limit: number;
     total: number;
+    totalPages: number;
   };
 
   constructor(output: ListByDestinationIdOutputInterface) {
