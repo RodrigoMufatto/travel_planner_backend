@@ -14,6 +14,11 @@ export abstract class ActivityRepository {
     data: ListByDestinationIdRepositoryInputInterface,
   ): Promise<{
     activity: ListByDestinationIdRepositoryOutputInterface[] | null;
-    pagination: { page: number; limit: number; total: number };
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
   }>;
 }
