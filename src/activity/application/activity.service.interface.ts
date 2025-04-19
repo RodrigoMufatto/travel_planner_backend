@@ -55,5 +55,6 @@ export interface ListByDestinationIdOutputInterface {
     page: number;
     limit: number;
     total: number;
+    totalPages: number;
   };
 }
