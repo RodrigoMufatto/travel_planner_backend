@@ -116,7 +116,7 @@ model Activity {
   description   String?
   startDate     DateTime  @map("start_date")
   endDate       DateTime? @map("end_date")
-  cost          Decimal?  @default(0.00) @db.Decimal(10,2)
+  cost          Decimal?  @default(0.00) @db.Decimal(10, 2)
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
   deletedAt     DateTime? @map("deleted_at")
@@ -164,11 +164,11 @@ model Address {
 }
 
 model Hotel {
-  id            String  @id @default(uuid())
-  destinationId String  @map("destination_id")
-  addressId     String  @map("address_id")
+  id            String   @id @default(uuid())
+  destinationId String   @map("destination_id")
+  addressId     String   @map("address_id")
   name          String
-  rating        Decimal
+  rating        Decimal? @default(0.00) @db.Decimal(10, 2)
 
   destination Destination @relation(fields: [destinationId], references: [id])
   address     Address     @relation(fields: [addressId], references: [id])
@@ -177,12 +177,12 @@ model Hotel {
 }
 
 model Restaurant {
-  id            String  @id @default(uuid())
-  destinationId String  @map("destination_id")
-  addressId     String  @map("address_id")
+  id            String   @id @default(uuid())
+  destinationId String   @map("destination_id")
+  addressId     String   @map("address_id")
   name          String
-  priceLevel    Int     @map("price_level")
-  rating        Decimal
+  priceLevel    Int      @map("price_level")
+  rating        Decimal? @default(0.00) @db.Decimal(10, 2)
 
   destination Destination @relation(fields: [destinationId], references: [id])
   address     Address     @relation(fields: [addressId], references: [id])
@@ -217,7 +217,7 @@ model GeneralFlight {
   stopNumber    Int       @map("stop_number")
   nonStop       Boolean   @map("non_stop")
   duration      String
-  price         Decimal
+  price         Decimal?  @default(0.00) @db.Decimal(10, 2)
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
   deletedAt     DateTime? @map("deleted_at")
