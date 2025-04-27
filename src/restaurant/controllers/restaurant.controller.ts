@@ -1,8 +1,22 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { RestaurantService } from '../application/restaurant.service';
 import { AuthGuard } from 'src/auth/auth.guards';
-import { CreateRestaurantDto } from '../dto/restaurant.dto';
-import { CreateRestaurantPresenter } from '../presenters/restaurant.presenter';
+import {
+  CreateRestaurantDto,
+  ListRestaurantByDestinationIdDto,
+} from '../dto/restaurant.dto';
+import {
+  CreateRestaurantPresenter,
+  ListRestaurantByDestinationIdPresenter,
+} from '../presenters/restaurant.presenter';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -15,5 +29,20 @@ export class RestaurantController {
       await this.restaurantService.createRestaurantService(body);
 
     return new CreateRestaurantPresenter(restaurant);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('list/:destinationId')
+  async listByDestinationId(
+    @Param('destinationId') destinationId: string,
+    @Query() query: ListRestaurantByDestinationIdDto,
+  ) {
+    const restaurantList =
+      await this.restaurantService.listRestaurantByDestinationIdService({
+        destinationId,
+        ...query,
+      });
+
+    return new ListRestaurantByDestinationIdPresenter(restaurantList);
   }
 }
