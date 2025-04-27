@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsNumber, IsNumberString, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 
 class AddressDto {
   @IsString()
@@ -40,4 +40,14 @@ export class CreateRestaurantDto {
   @ValidateNested()
   @Type(() => AddressDto)
   address: AddressDto;
+}
+
+export class ListRestaurantByDestinationIdDto {
+  @IsOptional()
+  @IsNumberString()
+  page?: string;
+
+  @IsOptional()
+  @IsNumberString()
+  limit?: string;
 }
