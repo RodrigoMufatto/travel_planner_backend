@@ -3,6 +3,8 @@ import { RestaurantRepository } from '../domain/repositories/restaurant.reposito
 import {
   CreateRestaurantServiceInputInterface,
   CreateRestaurantServiceOutputInterface,
+  ListRestaurantByDestinationIdInputInterface,
+  ListRestaurantByDestinationIdOutputInterface,
 } from './restaurant.service.interface';
 
 @Injectable()
@@ -19,6 +21,26 @@ export class RestaurantService {
     return {
       id: restaurant.id,
       destinationId: restaurant.destinationId,
+    };
+  }
+
+  async listRestaurantByDestinationIdService(
+    data: ListRestaurantByDestinationIdInputInterface,
+  ): Promise<ListRestaurantByDestinationIdOutputInterface> {
+    const page = data.page ? Number(data.page) : 1;
+    const limit = data.limit ? Number(data.limit) : 4;
+    const skip = (page - 1) * limit;
+
+    const restaurantList =
+      await this.restaurantRepository.listRestaurantByDestinationId({
+        skip,
+        limit,
+        destinationId: data.destinationId,
+      });
+
+    return {
+      restaurant: restaurantList.restaurant,
+      pagination: restaurantList.pagination,
     };
   }
 }
