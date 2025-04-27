@@ -4,6 +4,8 @@ import { RestaurantRepository } from 'src/restaurant/domain/repositories/restaur
 import {
   CreateRestaurantRepositoryInputInterface,
   CreateRestaurantRepositoryOutputInterface,
+  ListRestaurantByDestinationIdRepositoryInputInterface,
+  ListRestaurantByDestinationIdRepositoryOutputInterface,
 } from 'src/restaurant/domain/repositories/restaurant.repository.interface';
 import { v4 as uuid } from 'uuid';
 
@@ -39,5 +41,62 @@ export class PrismaRestaurantRepository implements RestaurantRepository {
         },
       },
     });
+  }
+
+  async listRestaurantByDestinationId(
+    data: ListRestaurantByDestinationIdRepositoryInputInterface,
+  ): Promise<{
+    restaurant: ListRestaurantByDestinationIdRepositoryOutputInterface[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }> {
+    const total = await this.prisma.restaurant.count({
+      where: {
+        destinationId: data.destinationId,
+      },
+    });
+
+    const restaurantList = await this.prisma.restaurant.findMany({
+      where: {
+        destinationId: data.destinationId,
+      },
+      select: {
+        id: true,
+        rating: true,
+        priceLevel: true,
+        address: {
+          select: {
+            city: true,
+            state: true,
+            country: true,
+            neighborhood: true,
+            number: true,
+            zipcode: true,
+            street: true,
+          },
+        },
+      },
+      skip: data.skip,
+      take: data.limit,
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    const totalPages = Math.ceil(total / data.limit);
+
+    return {
+      restaurant: restaurantList,
+      pagination: {
+        page: Math.floor(data.skip / data.limit) + 1,
+        limit: data.limit,
+        total: total,
+        totalPages: totalPages,
+      },
+    };
   }
 }
