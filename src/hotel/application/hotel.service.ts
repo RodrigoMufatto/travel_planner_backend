@@ -3,6 +3,8 @@ import { HotelRepository } from '../domain/repositories/hotel.repository';
 import {
   CreateHotelServiceInputInterface,
   CreateHotelServiceOutputInterface,
+  ListHotelByDestinationIdInputInterface,
+  ListHotelByDestinationIdOutputInterface,
 } from './hotel.service.interface';
 
 @Injectable()
@@ -19,6 +21,25 @@ export class HotelService {
     return {
       id: hotel.id,
       destinationId: hotel.destinationId,
+    };
+  }
+
+  async listHotelByDestinationIdService(
+    data: ListHotelByDestinationIdInputInterface,
+  ): Promise<ListHotelByDestinationIdOutputInterface> {
+    const page = data.page ? Number(data.page) : 1;
+    const limit = data.limit ? Number(data.limit) : 4;
+    const skip = (page - 1) * limit;
+
+    const restaurantList = await this.hotelRepository.listHotelByDestinationId({
+      skip,
+      limit,
+      destinationId: data.destinationId,
+    });
+
+    return {
+      hotel: restaurantList.hotel,
+      pagination: restaurantList.pagination,
     };
   }
 }
