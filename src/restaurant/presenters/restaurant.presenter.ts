@@ -17,6 +17,7 @@ export class CreateRestaurantPresenter {
 export class ListRestaurantByDestinationIdPresenter {
   restaurant: {
     id: string;
+    name: string;
     priceLevel: number;
     rating: number;
     address: RestaurantAddressInterface;
@@ -32,6 +33,7 @@ export class ListRestaurantByDestinationIdPresenter {
   constructor(output: ListRestaurantByDestinationIdOutputInterface) {
     this.restaurant = output.restaurant.map((item) => ({
       id: item.id,
+      name: item.name,
       priceLevel: item.priceLevel,
       rating: Number(item.rating),
       address: item.address,
