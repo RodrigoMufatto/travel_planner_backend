@@ -44,3 +44,13 @@ export class CreateHotelDto {
   @Type(() => AddressDto)
   address: AddressDto;
 }
+
+export class ListHotelByDestinationIdDto {
+  @IsOptional()
+  @IsNumberString()
+  page?: string;
+
+  @IsOptional()
+  @IsNumberString()
+  limit?: string;
+}
