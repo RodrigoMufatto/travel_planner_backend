@@ -29,6 +29,7 @@ export interface ListRestaurantByDestinationIdRepositoryInputInterface {
 
 export interface ListRestaurantByDestinationIdRepositoryOutputInterface {
   id: string;
+  name: string;
   priceLevel: number;
   rating: Prisma.Decimal;
   address: {
