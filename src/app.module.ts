@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { TripModule } from './trip/trip.module';
 import { ActivityModule } from './activity/activity.module';
 import { RestaurantModule } from './restaurant/restaurant.module';
+import { HotelModule } from './hotel/hotel.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { RestaurantModule } from './restaurant/restaurant.module';
     TripModule,
     ActivityModule,
     RestaurantModule,
+    HotelModule,
   ],
   controllers: [AppController],
   providers: [AppService],
