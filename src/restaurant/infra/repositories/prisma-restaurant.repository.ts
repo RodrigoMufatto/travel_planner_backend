@@ -66,6 +66,7 @@ export class PrismaRestaurantRepository implements RestaurantRepository {
       },
       select: {
         id: true,
+        name: true,
         rating: true,
         priceLevel: true,
         address: {
