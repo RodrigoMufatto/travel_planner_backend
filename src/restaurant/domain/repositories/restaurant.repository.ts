@@ -21,4 +21,8 @@ export abstract class RestaurantRepository {
       totalPages: number;
     };
   }>;
+
+  abstract deleteRestaurantById(restaurantId: string);
+
+  abstract findRestaurantById(restaurantId: string);
 }

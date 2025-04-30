@@ -100,4 +100,20 @@ export class PrismaRestaurantRepository implements RestaurantRepository {
       },
     };
   }
+
+  async deleteRestaurantById(restaurantId: string) {
+    await this.prisma.restaurant.delete({
+      where: {
+        id: restaurantId,
+      },
+    });
+  }
+
+  async findRestaurantById(restaurantId: string) {
+    return await this.prisma.restaurant.findUnique({
+      where: {
+        id: restaurantId,
+      },
+    });
+  }
 }
