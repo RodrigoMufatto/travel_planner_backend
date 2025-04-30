@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -44,5 +45,13 @@ export class RestaurantController {
       });
 
     return new ListRestaurantByDestinationIdPresenter(restaurantList);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('delete/:restaurantId')
+  async deleteRestaurantById(@Param('restaurantId') restaurantId: string) {
+    await this.restaurantService.deleteRestaurantService(restaurantId);
+
+    return { statusCode: 204 };
   }
 }
