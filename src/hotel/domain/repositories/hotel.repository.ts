@@ -21,4 +21,8 @@ export abstract class HotelRepository {
       totalPages: number;
     };
   }>;
+
+  abstract deleteHotelById(hotelId: string);
+
+  abstract findHotelById(hotelId: string);
 }

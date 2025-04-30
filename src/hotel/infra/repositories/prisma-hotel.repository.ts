@@ -98,4 +98,20 @@ export class PrismaHotelRepository implements HotelRepository {
       },
     };
   }
+
+  async deleteHotelById(hotelId: string) {
+    await this.prisma.hotel.delete({
+      where: {
+        id: hotelId,
+      },
+    });
+  }
+
+  async findHotelById(hotelId: string) {
+    return await this.prisma.hotel.findUnique({
+      where: {
+        id: hotelId,
+      },
+    });
+  }
 }
