@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { RestaurantRepository } from '../domain/repositories/restaurant.repository';
 import {
   CreateRestaurantServiceInputInterface,
@@ -42,5 +42,16 @@ export class RestaurantService {
       restaurant: restaurantList.restaurant,
       pagination: restaurantList.pagination,
     };
+  }
+
+  async deleteRestaurantService(restaurantId: string) {
+    const restaurant =
+      await this.restaurantRepository.findRestaurantById(restaurantId);
+
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant not found`);
+    }
+
+    await this.restaurantRepository.deleteRestaurantById(restaurantId);
   }
 }
