@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -39,5 +40,13 @@ export class HotelController {
     });
 
     return new ListHotelByDestinationIdPresenter(hotelList);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('delete/:hotelId')
+  async deleteHotelById(@Param('hotelId') hotelId: string) {
+    await this.hotelService.deleteHotelService(hotelId);
+
+    return { statusCode: 204 };
   }
 }
