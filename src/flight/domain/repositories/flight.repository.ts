@@ -13,4 +13,8 @@ export abstract class FlightRepository {
   abstract listFlightByDestinationId(
     data: ListFlightByDestinationIdRepositoryInputInterface,
   ): Promise<ListFlightByDestinationIdRepositoryOutputInterface>;
+
+  abstract deleteFlightById(flightId: string);
+
+  abstract findFlightById(flightId: string);
 }

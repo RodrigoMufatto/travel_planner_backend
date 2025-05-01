@@ -93,4 +93,20 @@ export class PrismaFlightRepository implements FlightRepository {
       },
     };
   }
+
+  async deleteFlightById(flightId: string) {
+    await this.prisma.generalFlight.delete({
+      where: {
+        id: flightId,
+      },
+    });
+  }
+
+  async findFlightById(flightId: string) {
+    return await this.prisma.generalFlight.findUnique({
+      where: {
+        id: flightId,
+      },
+    });
+  }
 }
