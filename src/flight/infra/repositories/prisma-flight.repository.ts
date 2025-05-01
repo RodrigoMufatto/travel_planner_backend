@@ -3,6 +3,8 @@ import { FlightRepository } from 'src/flight/domain/repositories/flight.reposito
 import {
   CreateFlightRepositoryInputInterface,
   CreateFlightRepositoryOutputInterface,
+  ListFlightByDestinationIdRepositoryInputInterface,
+  ListFlightByDestinationIdRepositoryOutputInterface,
 } from 'src/flight/domain/repositories/flight.repository.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuid } from 'uuid';
@@ -42,5 +44,53 @@ export class PrismaFlightRepository implements FlightRepository {
         },
       },
     });
+  }
+
+  async listFlightByDestinationId(
+    data: ListFlightByDestinationIdRepositoryInputInterface,
+  ): Promise<ListFlightByDestinationIdRepositoryOutputInterface> {
+    const total = await this.prisma.generalFlight.count({
+      where: {
+        destinationId: data.destinationId,
+      },
+    });
+
+    const flightList = await this.prisma.generalFlight.findMany({
+      where: {
+        destinationId: data.destinationId,
+      },
+      select: {
+        id: true,
+        nonStop: true,
+        price: true,
+        Flight: {
+          select: {
+            id: true,
+            airlineName: true,
+            departureTime: true,
+            arrivalTime: true,
+            originAirport: true,
+            destinationAirport: true,
+          },
+        },
+      },
+      skip: data.skip,
+      take: data.limit,
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    const totalPages = Math.ceil(total / data.limit);
+
+    return {
+      flights: flightList,
+      pagination: {
+        page: Math.floor(data.skip / data.limit) + 1,
+        limit: data.limit,
+        total: total,
+        totalPages: totalPages,
+      },
+    };
   }
 }
