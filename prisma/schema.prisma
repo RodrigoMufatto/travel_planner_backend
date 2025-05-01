@@ -164,14 +164,14 @@ model Address {
 }
 
 model Hotel {
-  id            String   @id @default(uuid())
-  destinationId String   @map("destination_id")
-  addressId     String   @map("address_id")
+  id            String    @id @default(uuid())
+  destinationId String    @map("destination_id")
+  addressId     String    @map("address_id")
   name          String
-  rating        Decimal? @default(0.00) @db.Decimal(10, 2)
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
+  rating        Decimal?  @default(0.00) @db.Decimal(10, 2)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
 
   destination Destination @relation(fields: [destinationId], references: [id])
   address     Address     @relation(fields: [addressId], references: [id])
@@ -180,15 +180,15 @@ model Hotel {
 }
 
 model Restaurant {
-  id            String   @id @default(uuid())
-  destinationId String   @map("destination_id")
-  addressId     String   @map("address_id")
+  id            String    @id @default(uuid())
+  destinationId String    @map("destination_id")
+  addressId     String    @map("address_id")
   name          String
-  priceLevel    Int      @map("price_level")
-  rating        Decimal? @default(0.00) @db.Decimal(10, 2)
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
+  priceLevel    Int       @map("price_level")
+  rating        Decimal?  @default(0.00) @db.Decimal(10, 2)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
 
   destination Destination @relation(fields: [destinationId], references: [id])
   address     Address     @relation(fields: [addressId], references: [id])
@@ -212,7 +212,7 @@ model Flight {
   updatedAt          DateTime  @updatedAt @map("updated_at")
   deletedAt          DateTime? @map("deleted_at")
 
-  generalFlight GeneralFlight @relation(fields: [generalFlightId], references: [id])
+  generalFlight GeneralFlight @relation(fields: [generalFlightId], references: [id], onDelete: Cascade)
 
   @@map("flights")
 }
