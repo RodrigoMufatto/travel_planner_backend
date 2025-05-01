@@ -5,6 +5,7 @@ import { TripModule } from './trip/trip.module';
 import { ActivityModule } from './activity/activity.module';
 import { RestaurantModule } from './restaurant/restaurant.module';
 import { HotelModule } from './hotel/hotel.module';
+import { FlightModule } from './flight/flight.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { HotelModule } from './hotel/hotel.module';
     ActivityModule,
     RestaurantModule,
     HotelModule,
+    FlightModule,
   ],
   controllers: [],
   providers: [],
