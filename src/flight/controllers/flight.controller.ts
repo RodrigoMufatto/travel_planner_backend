@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -43,5 +44,13 @@ export class FlightController {
       });
 
     return new ListFlightByDestinationIdPresenter(flightList);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('delete/:flightId')
+  async deleteFlightById(@Param('flightId') flightId: string) {
+    await this.flightService.deleteFlightService(flightId);
+
+    return { statusCode: 204 };
   }
 }
