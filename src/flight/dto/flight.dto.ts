@@ -4,6 +4,8 @@ import {
   IsBoolean,
   IsDateString,
   IsNumber,
+  IsNumberString,
+  IsOptional,
   IsString,
   IsUUID,
   ValidateNested,
@@ -58,4 +60,14 @@ export class CreateFlightDto {
   @ValidateNested({ each: true })
   @Type(() => FlightSegmentDto)
   flights: FlightSegmentDto[];
+}
+
+export class ListFlightByDestinationIdDto {
+  @IsOptional()
+  @IsNumberString()
+  page?: string;
+
+  @IsOptional()
+  @IsNumberString()
+  limit?: string;
 }
