@@ -79,4 +79,14 @@ export class FlightService {
       pagination: flightList.pagination,
     };
   }
+
+  async deleteFlightService(flightId: string) {
+    const flight = await this.flightRepository.findFlightById(flightId);
+
+    if (!flight) {
+      throw new NotFoundException(`Flight not found`);
+    }
+
+    await this.flightRepository.deleteFlightById(flightId);
+  }
 }
