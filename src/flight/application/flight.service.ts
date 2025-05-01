@@ -7,6 +7,8 @@ import { FlightRepository } from '../domain/repositories/flight.repository';
 import {
   CreateFlightServiceInputInterface,
   CreateFlightServiceOutputInterface,
+  ListFlightByDestinationIdInputInterface,
+  ListFlightByDestinationIdOutputInterface,
 } from './flight.service.interface';
 import { DestinationRepository } from 'src/shared/repositories/destination.repository';
 
@@ -56,6 +58,25 @@ export class FlightService {
     return {
       id: flight.id,
       destinationId: flight.destinationId,
+    };
+  }
+
+  async listFlightByDestinationIdService(
+    data: ListFlightByDestinationIdInputInterface,
+  ): Promise<ListFlightByDestinationIdOutputInterface> {
+    const page = data.page ? Number(data.page) : 1;
+    const limit = data.limit ? Number(data.limit) : 4;
+    const skip = (page - 1) * limit;
+
+    const flightList = await this.flightRepository.listFlightByDestinationId({
+      skip,
+      limit,
+      destinationId: data.destinationId,
+    });
+
+    return {
+      flights: flightList.flights,
+      pagination: flightList.pagination,
     };
   }
 }
