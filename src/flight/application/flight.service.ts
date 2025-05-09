@@ -68,6 +68,14 @@ export class FlightService {
     const limit = data.limit ? Number(data.limit) : 4;
     const skip = (page - 1) * limit;
 
+    const destination = await this.destinationRepository.findById(
+      data.destinationId,
+    );
+
+    if (!destination) {
+      throw new NotFoundException(`Destination not found.`);
+    }
+
     const flightList = await this.flightRepository.listFlightByDestinationId({
       skip,
       limit,
