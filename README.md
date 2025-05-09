@@ -112,3 +112,63 @@ Authorization: Bearer your_jwt_token
 ## 📝 License
 
 MIT © 2025
+
+## 🗂️ Database Schema Overview
+
+The following is a high-level description of the data model used in this project, based on the Prisma schema:
+
+### 👤 User and Trip Management
+
+- **User**
+  - Can have multiple `UserTrips`
+  - Stores personal information and credentials
+
+- **UserTrip**
+  - Many-to-many relationship between `User` and `Trip`
+  - Has roles: `OWNER`, `MANAGER`, `SPECTATOR`
+
+- **UserTripCheck**
+  - Tracks status: `CONFIRMED`, `PENDING`, `DENIED` for user in a trip
+
+### 🧭 Trip and Destination
+
+- **Trip**
+  - Has many `Destinations`
+  - Linked to users via `UserTrips`
+
+- **Destination**
+  - Belongs to one `Trip`
+  - Has many `Activities`, `Hotels`, `Restaurants`, and `GeneralFlights`
+
+### 🗺️ Activities
+
+- **Activity**
+  - Has a title, description, cost, and time window
+  - Related to `Destination` and `Address`
+  - Has members via `UserTripActivityMember`
+
+- **UserTripActivityMember**
+  - Links a `UserTrip` to an `Activity` with a status
+
+### 🏨 Hotels and Restaurants
+
+- **Hotel / Restaurant**
+  - Related to a `Destination` and `Address`
+  - Stores rating and other location details
+
+### ✈️ Flights
+
+- **GeneralFlight**
+  - Group of flights for a destination
+  - Contains price, stop count, duration
+
+- **Flight**
+  - Specific segment of a flight
+  - Linked to `GeneralFlight`
+
+### 📍 Address
+
+- Reused across `Activity`, `Hotel`, and `Restaurant`
+- Contains common location fields
+
+This structure promotes clean normalization, efficient querying, and flexibility for travel planning use cases.
