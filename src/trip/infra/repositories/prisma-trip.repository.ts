@@ -148,4 +148,12 @@ export class PrismaTripRepository implements TripRepository {
 
     return trip;
   }
+
+  async findTripById(tripId: string) {
+    return await this.prisma.trip.findUnique({
+      where: {
+        id: tripId,
+      },
+    });
+  }
 }

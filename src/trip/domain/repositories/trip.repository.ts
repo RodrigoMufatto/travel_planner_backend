@@ -29,4 +29,6 @@ export abstract class TripRepository {
   abstract getTripById(
     tripId: string,
   ): Promise<GetTripByUserIdRepositoryOutputInterface>;
+
+  abstract findTripById(tripId: string);
 }
