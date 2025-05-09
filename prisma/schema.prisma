@@ -1,0 +1,235 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  username  String
+  phone     String
+  birthdate DateTime
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  userTrips UserTrip[]
+
+  @@map("users")
+}
+
+model UserTrip {
+  id        String       @id @default(uuid())
+  userId    String       @map("user_id")
+  tripId    String       @map("trip_id")
+  role      UserTripRole
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+  deletedAt DateTime?    @map("deleted_at")
+
+  user       User                     @relation(fields: [userId], references: [id])
+  trip       Trip                     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  checks     UserTripCheck[]
+  activities UserTripActivityMember[]
+
+  @@map("user_trips")
+}
+
+enum UserTripRole {
+  OWNER
+  MANAGER
+  SPECTATOR
+}
+
+model UserTripCheck {
+  id         String              @id @default(uuid())
+  userTripId String              @map("user_trip_id")
+  status     UserTripCheckStatus
+  createdAt  DateTime            @default(now()) @map("created_at")
+  updatedAt  DateTime            @updatedAt @map("updated_at")
+  deletedAt  DateTime?           @map("deleted_at")
+
+  userTrip UserTrip @relation(fields: [userTripId], references: [id])
+
+  @@map("user_trip_checks")
+}
+
+enum UserTripCheckStatus {
+  CONFIRMED
+  PENDING
+  DENIED
+}
+
+model Trip {
+  id        String    @id @default(uuid())
+  title     String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  destinations Destination[]
+  userTrips    UserTrip[]
+
+  @@map("trips")
+}
+
+model Destination {
+  id        String    @id @default(uuid())
+  tripId    String    @map("trip_id")
+  city      String?
+  state     String?
+  country   String?
+  latitude  String?
+  longitude String?
+  startDate DateTime  @map("start_date")
+  endDate   DateTime  @map("end_date")
+  placeId   String?   @map("place_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  trip           Trip            @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  activities     Activity[]
+  hotels         Hotel[]
+  restaurants    Restaurant[]
+  generalFlights GeneralFlight[]
+
+  @@map("destinations")
+}
+
+model Activity {
+  id            String    @id @default(uuid())
+  destinationId String    @map("destination_id")
+  addressId     String    @map("address_id")
+  title         String
+  description   String?
+  startDate     DateTime  @map("start_date")
+  endDate       DateTime? @map("end_date")
+  cost          Decimal?  @default(0.00) @db.Decimal(10, 2)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  destination Destination              @relation(fields: [destinationId], references: [id])
+  address     Address                  @relation(fields: [addressId], references: [id])
+  members     UserTripActivityMember[]
+
+  @@map("activities")
+}
+
+model UserTripActivityMember {
+  id         String    @id @default(uuid())
+  activityId String    @map("activity_id")
+  userTripId String    @map("user_trip_id")
+  status     Boolean
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  activity Activity @relation(fields: [activityId], references: [id])
+  userTrip UserTrip @relation(fields: [userTripId], references: [id])
+
+  @@map("user_trip_activity_members")
+}
+
+model Address {
+  id           String    @id @default(uuid())
+  city         String?
+  state        String?
+  country      String?
+  number       String?
+  neighborhood String?
+  street       String?
+  zipcode      String?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  Activity   Activity[]
+  Hotel      Hotel[]
+  Restaurant Restaurant[]
+
+  @@map("addresses")
+}
+
+model Hotel {
+  id            String    @id @default(uuid())
+  destinationId String    @map("destination_id")
+  addressId     String    @map("address_id")
+  name          String
+  rating        Decimal?  @default(0.00) @db.Decimal(10, 2)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  destination Destination @relation(fields: [destinationId], references: [id])
+  address     Address     @relation(fields: [addressId], references: [id])
+
+  @@map("hotels")
+}
+
+model Restaurant {
+  id            String    @id @default(uuid())
+  destinationId String    @map("destination_id")
+  addressId     String    @map("address_id")
+  name          String
+  priceLevel    Int       @map("price_level")
+  rating        Decimal?  @default(0.00) @db.Decimal(10, 2)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  destination Destination @relation(fields: [destinationId], references: [id])
+  address     Address     @relation(fields: [addressId], references: [id])
+
+  @@map("restaurants")
+}
+
+model Flight {
+  id                 String    @id @default(uuid())
+  generalFlightId    String    @map("general_flight_id")
+  order              Int
+  carrierCodeAirline String    @map("carrier_code_airline")
+  airlineName        String    @map("airline_name")
+  originAirport      String    @map("origin_airport")
+  destinationAirport String    @map("destination_airport")
+  departureDate      DateTime  @map("departure_date")
+  departureTime      DateTime  @map("departure_time")
+  arrivalDate        DateTime  @map("arrival_date")
+  arrivalTime        DateTime  @map("arrival_time")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+
+  generalFlight GeneralFlight @relation(fields: [generalFlightId], references: [id], onDelete: Cascade)
+
+  @@map("flights")
+}
+
+model GeneralFlight {
+  id            String    @id @default(uuid())
+  destinationId String    @map("destination_id")
+  stopNumber    Int       @map("stop_number")
+  nonStop       Boolean   @map("non_stop")
+  duration      String
+  price         Decimal?  @default(0.00) @db.Decimal(10, 2)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  destination Destination @relation(fields: [destinationId], references: [id])
+  Flight      Flight[]
+
+  @@map("general_flights")
+}
