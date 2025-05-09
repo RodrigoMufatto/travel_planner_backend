@@ -6,14 +6,26 @@ import {
   ListRestaurantByDestinationIdInputInterface,
   ListRestaurantByDestinationIdOutputInterface,
 } from './restaurant.service.interface';
+import { DestinationRepository } from 'src/shared/repositories/destination.repository';
 
 @Injectable()
 export class RestaurantService {
-  constructor(private restaurantRepository: RestaurantRepository) {}
+  constructor(
+    private restaurantRepository: RestaurantRepository,
+    private destinationRepository: DestinationRepository,
+  ) {}
 
   async createRestaurantService(
     data: CreateRestaurantServiceInputInterface,
   ): Promise<CreateRestaurantServiceOutputInterface> {
+    const destination = await this.destinationRepository.findById(
+      data.destinationId,
+    );
+
+    if (!destination) {
+      throw new NotFoundException(`Destination not found.`);
+    }
+
     const restaurant = await this.restaurantRepository.createRestaurant({
       ...data,
     });
@@ -30,6 +42,14 @@ export class RestaurantService {
     const page = data.page ? Number(data.page) : 1;
     const limit = data.limit ? Number(data.limit) : 4;
     const skip = (page - 1) * limit;
+
+    const destination = await this.destinationRepository.findById(
+      data.destinationId,
+    );
+
+    if (!destination) {
+      throw new NotFoundException(`Destination not found.`);
+    }
 
     const restaurantList =
       await this.restaurantRepository.listRestaurantByDestinationId({

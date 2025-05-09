@@ -4,8 +4,10 @@ import { RestaurantService } from './application/restaurant.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaRestaurantRepository } from './infra/repositories/prisma-restaurant.repository';
 import { RestaurantRepository } from './domain/repositories/restaurant.repository';
+import { RepositoriesModule } from 'src/shared/repositories/repositories.module';
 
 @Module({
+  imports: [RepositoriesModule],
   controllers: [RestaurantController],
   providers: [
     RestaurantService,
